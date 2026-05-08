@@ -7,9 +7,6 @@ use Illuminate\Database\Seeder;
 
 class ModuleSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $modules = [
@@ -17,8 +14,7 @@ class ModuleSeeder extends Seeder
             'roles' => 'Roles',
             'modules' => 'Modules',
             'permissions' => 'Permissions',
-            'ventas' => 'Ventas',
-            'inventario' => 'Inventario',
+            'expedientes' => 'Expedientes',
         ];
 
         foreach ($modules as $code => $name) {

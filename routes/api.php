@@ -2,16 +2,14 @@
 
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\VentaController;
+use App\Http\Controllers\School\ExpedienteController;
 use Illuminate\Support\Facades\Route;
-
-// Route::post('/v1/login', [AuthController::class, 'login']);
+use App\Http\Controllers\School\ExpedienteDocumentoController;
 
 Route::post('/v1/login', [AuthController::class, 'login'])
     ->middleware('throttle:5,1');
@@ -19,12 +17,15 @@ Route::post('/v1/login', [AuthController::class, 'login'])
 Route::middleware(['access.token.cookie', 'auth:sanctum', 'active.user'])
     ->prefix('v1')
     ->group(function () {
-
         Route::post('/logout', [AuthController::class, 'logout']);
 
         Route::get('/me', [SessionController::class, 'me']);
 
+        // USUARIOS
         Route::get('/users', [UserController::class, 'index'])
+            ->middleware('permission:users,read');
+
+        Route::get('/users/{user}', [UserController::class, 'show'])
             ->middleware('permission:users,read');
 
         Route::post('/users', [UserController::class, 'store'])
@@ -39,6 +40,7 @@ Route::middleware(['access.token.cookie', 'auth:sanctum', 'active.user'])
         Route::post('/users/{user}/restore', [UserController::class, 'restore'])
             ->middleware('permission:users,update');
 
+        // ROLES
         Route::get('/roles', [RoleController::class, 'index'])
             ->middleware('permission:roles,read');
 
@@ -57,34 +59,38 @@ Route::middleware(['access.token.cookie', 'auth:sanctum', 'active.user'])
         Route::post('/roles/{role}/permissions/sync', [RolePermissionController::class, 'sync'])
             ->middleware('permission:roles,assign_permissions');
 
-        Route::get('/ventas', [VentaController::class, 'index'])
-            ->middleware('permission:ventas,read');
+        // EXPEDIENTES (ALUMNOS)
+        Route::get('/expedientes', [ExpedienteController::class, 'index'])
+            ->middleware('permission:expedientes,read');
 
-        Route::post('/ventas', [VentaController::class, 'store'])
-            ->middleware('permission:ventas,create');
+        Route::get('/expedientes/{expediente}', [ExpedienteController::class, 'show'])
+            ->middleware('permission:expedientes,read');
 
-        Route::get('/ventas/{venta}', [VentaController::class, 'show'])
-            ->middleware('permission:ventas,read');
+        Route::post('/expedientes', [ExpedienteController::class, 'store'])
+            ->middleware('permission:expedientes,create');
 
-        Route::put('/ventas/{venta}', [VentaController::class, 'update'])
-            ->middleware('permission:ventas,update');
+        Route::put('/expedientes/{expediente}', [ExpedienteController::class, 'update'])
+            ->middleware('permission:expedientes,update');
 
-        Route::delete('/ventas/{venta}', [VentaController::class, 'destroy'])
-            ->middleware('permission:ventas,delete');
+        Route::delete('/expedientes/{expediente}', [ExpedienteController::class, 'destroy'])
+            ->middleware('permission:expedientes,delete');
 
-        Route::get('/inventario', [InventarioController::class, 'index'])
-            ->middleware('permission:inventario,read');
+        Route::post('/expedientes/{id}/restore', [ExpedienteController::class, 'restore'])
+            ->middleware('permission:expedientes,update');
 
-        Route::post('/inventario', [InventarioController::class, 'store'])
-            ->middleware('permission:inventario,create');
+        // EXPEDIENTE DOCUMENTOS
+        Route::get('/expediente-documentos', [ExpedienteDocumentoController::class, 'index'])
+            ->middleware('permission:expedientes,read');
 
-        Route::get('/inventario/{inventario}', [InventarioController::class, 'show'])
-            ->middleware('permission:inventario,read');
+        Route::post('/expediente-documentos', [ExpedienteDocumentoController::class, 'store'])
+            ->middleware('permission:expedientes,create');
 
-        Route::put('/inventario/{inventario}', [InventarioController::class, 'update'])
-            ->middleware('permission:inventario,update');
+        Route::delete('/expediente-documentos/{expedienteDocumento}', [ExpedienteDocumentoController::class, 'destroy'])
+            ->middleware('permission:expedientes,delete');
 
-        Route::delete('/inventario/{inventario}', [InventarioController::class, 'destroy'])
-            ->middleware('permission:inventario,delete');
+        Route::get('/expediente-documentos/{expedienteDocumento}/download', [ExpedienteDocumentoController::class, 'download'])
+            ->middleware('permission:expedientes,read');
 
+            Route::post('/expediente-documentos/{expedienteDocumento}/validate', [ExpedienteDocumentoController::class, 'validateDocument'])
+            ->middleware('permission:expedientes,update');
     });

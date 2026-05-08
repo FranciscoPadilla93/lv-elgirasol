@@ -1,0 +1,39 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class CicloEscolarSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $ciclos = [
+            [
+                'code' => '2025-2026',
+                'name' => 'Ciclo Escolar 2025 - 2026',
+                'start_date' => '2025-08-01',
+                'end_date' => '2026-07-31',
+                'is_current' => true,
+                'status' => true,
+            ],
+            [
+                'code' => '2026-2027',
+                'name' => 'Ciclo Escolar 2026 - 2027',
+                'start_date' => '2026-08-01',
+                'end_date' => '2027-07-31',
+                'is_current' => false,
+                'status' => true,
+            ],
+        ];
+
+        foreach ($ciclos as $ciclo) {
+            DB::table('cat_ciclos_escolares')
+                ->updateOrInsert(
+                    ['code' => $ciclo['code']],
+                    $ciclo
+                );
+        }
+    }
+}

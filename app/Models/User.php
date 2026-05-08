@@ -70,7 +70,8 @@ class User extends Authenticatable
 
     public static function cacheStore(): Repository
     {
-        return Cache::store('redis');
+        // return Cache::store('redis');
+        return Cache::store(config('cache.default'));
     }
 
     public static function flushRolePermissionsCache(?int $roleId = null): void

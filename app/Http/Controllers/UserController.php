@@ -28,6 +28,14 @@ class UserController extends Controller
         );
     }
 
+    public function show(User $user): JsonResponse
+    {
+        return ResponseHelper::success(
+            new UserResource($user),
+            'Usuario obtenido correctamente.'
+        );
+    }
+
     protected function getUsersFromDatabase(string $search, int $perPage, int $page)
     {
         return User::query()

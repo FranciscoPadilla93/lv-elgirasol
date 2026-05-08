@@ -27,14 +27,6 @@ class UserSeeder extends Seeder
                 'name' => 'Admin',
                 'email' => 'admin@example.com',
             ],
-            'admin_ventas' => [
-                'name' => 'Admin Ventas',
-                'email' => 'admin.ventas@example.com',
-            ],
-            'admin_inventario' => [
-                'name' => 'Admin Inventario',
-                'email' => 'admin.inventario@example.com',
-            ],
             'user' => [
                 'name' => 'User',
                 'email' => 'user@example.com',

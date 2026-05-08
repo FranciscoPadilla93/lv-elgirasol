@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Models\School;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Catalogs\Parentesco;
+use App\Models\User;
+
+class ExpedienteTutor extends Model
+{
+    use SoftDeletes;
+
+    protected $table = 'expediente_tutores';
+
+    protected $fillable = [
+        'expediente_id',
+        'tutor_id',
+        'parentesco_id',
+        'is_primary_contact',
+        'is_financial_responsible',
+        'status',
+        'created_by',
+        'updated_by',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_primary_contact' => 'boolean',
+            'is_financial_responsible' => 'boolean',
+            'status' => 'boolean',
+        ];
+    }
+
+    // RELACIONES
+    public function expediente(): BelongsTo
+    {
+        return $this->belongsTo(Expediente::class);
+    }
+
+    public function tutor(): BelongsTo
+    {
+        return $this->belongsTo(Tutor::class);
+    }
+
+    public function parentesco(): BelongsTo
+    {
+        return $this->belongsTo(Parentesco::class);
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    // SCOPES
+    public function scopePrimary($query)
+    {
+        return $query->where('is_primary_contact', true);
+    }
+
+    public function scopeFinancialResponsible($query)
+    {
+        return $query->where('is_financial_responsible', true);
+    }
+}

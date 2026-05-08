@@ -19,8 +19,15 @@ class StoreUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
-            'role_id' => ['nullable', 'integer', 'exists:roles,id'],
+            'role_id' => ['required', 'integer', 'exists:roles,id'],
             'status' => ['nullable', 'string', Rule::in(['active', 'inactive'])],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'email' => strtolower(trim($this->email)),
+        ]);
     }
 }

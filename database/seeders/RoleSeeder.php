@@ -7,17 +7,13 @@ use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $roles = [
             'super_admin' => 'Super Admin',
             'developer' => 'Developer',
             'admin' => 'Admin',
-            'admin_ventas' => 'Admin Ventas',
-            'admin_inventario' => 'Admin Inventario',
+            'control_escolar' => 'Control Escolar',
             'user' => 'User',
         ];
 

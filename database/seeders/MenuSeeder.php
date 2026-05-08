@@ -8,23 +8,15 @@ use Illuminate\Database\Seeder;
 
 class MenuSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $items = [
-            'ventas' => [
-                'label' => 'Ventas',
-                'path' => '/ventas',
-                'icon' => 'shopping-cart',
+            // ESCOLAR
+            'expedientes' => [
+                'label' => 'Expedientes',
+                'path' => '/expedientes',
+                'icon' => 'folder-open',
                 'order' => 10,
-            ],
-            'inventario' => [
-                'label' => 'Inventario',
-                'path' => '/inventario',
-                'icon' => 'package',
-                'order' => 20,
             ],
         ];
 

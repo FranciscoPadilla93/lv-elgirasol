@@ -24,9 +24,18 @@ class UpdateUserRequest extends FormRequest
                 'max:255',
                 Rule::unique('users', 'email')->ignore($this->route('user')),
             ],
-            'password' => ['sometimes', 'required', 'string', 'min:8'],
+            'password' => ['nullable', 'string', 'min:8'],
             'role_id' => ['sometimes', 'nullable', 'integer', 'exists:roles,id'],
             'status' => ['sometimes', 'required', 'string', Rule::in(['active', 'inactive'])],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('email')) {
+            $this->merge([
+                'email' => strtolower(trim($this->email)),
+            ]);
+        }
     }
 }

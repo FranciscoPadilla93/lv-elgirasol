@@ -10,28 +10,67 @@ use Illuminate\Database\Seeder;
 
 class RolePermissionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $permissionsByRole = [
-            'super_admin' => ['read', 'create', 'update', 'delete', 'export', 'import', 'assign_permissions'],
-            'developer' => ['read', 'create', 'update', 'delete', 'export', 'import', 'assign_permissions'],
-            'admin' => ['read', 'create', 'update', 'delete', 'export', 'import'],
-            'admin_ventas' => ['read', 'create', 'update', 'delete'],
-            'admin_inventario' => ['read', 'create', 'update', 'delete'],
-            'user' => ['read'],
+            'super_admin' => ['read', 'create', 'update', 'delete', 'export', 'import', 'assign_permissions',],
+            'developer' => ['read','create','update','delete','export','import','assign_permissions',],
+            'admin' => ['read','create','update','delete','export','import',],
+            'control_escolar' => ['read','create','update'],
+            'user' => ['read',],
         ];
 
         $modulesByRole = [
-            'admin_ventas' => ['ventas'],
-            'admin_inventario' => ['inventario'],
+            // ACCESO TOTAL
+            'super_admin' => [
+                'users',
+                'roles',
+                'modules',
+                'permissions',
+                'expedientes',
+            ],
+
+            'developer' => [
+                'users',
+                'roles',
+                'modules',
+                'permissions',
+                'expedientes',
+            ],
+
+            'admin' => [
+                'users',
+                'roles',
+                'expedientes',
+            ],
+            'control_escolar' => [
+                'expedientes',
+            ],
+            'user' => [
+                'expedientes',
+            ],
         ];
 
-        $roles = Role::whereIn('code', array_keys($permissionsByRole))->get()->keyBy('code');
-        $modules = Module::whereIn('code', ['users', 'roles', 'modules', 'permissions', 'ventas', 'inventario'])->get();
-        $permissions = Permission::whereIn('code', collect($permissionsByRole)->flatten()->unique())->get()->keyBy('code');
+        $roles = Role::query()
+            ->whereIn(
+                'code',
+                array_keys($permissionsByRole)
+            )
+            ->get()
+            ->keyBy('code');
+
+        $permissions = Permission::query()
+            ->whereIn(
+                'code',
+                collect($permissionsByRole)
+                    ->flatten()
+                    ->unique()
+            )
+            ->get()
+            ->keyBy('code');
+
+        $modules = Module::all()
+            ->keyBy('code');
 
         foreach ($permissionsByRole as $roleCode => $permissionCodes) {
             $role = $roles->get($roleCode);
@@ -40,9 +79,15 @@ class RolePermissionSeeder extends Seeder
                 continue;
             }
 
-            $roleModules = $modulesByRole[$roleCode] ?? ['users', 'roles', 'modules', 'permissions', 'ventas', 'inventario'];
+            $roleModules = $modulesByRole[$roleCode] ?? [];
 
-            foreach ($modules->whereIn('code', $roleModules) as $module) {
+            foreach ($roleModules as $moduleCode) {
+                $module = $modules->get($moduleCode);
+
+                if (! $module) {
+                    continue;
+                }
+
                 foreach ($permissionCodes as $permissionCode) {
                     $permission = $permissions->get($permissionCode);
 
@@ -56,7 +101,9 @@ class RolePermissionSeeder extends Seeder
                             'module_id' => $module->id,
                             'permission_id' => $permission->id,
                         ],
-                        ['allowed' => true],
+                        [
+                            'allowed' => true,
+                        ],
                     );
                 }
             }
