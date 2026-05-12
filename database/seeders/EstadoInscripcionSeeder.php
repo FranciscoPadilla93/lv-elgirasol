@@ -15,42 +15,49 @@ class EstadoInscripcionSeeder extends Seeder
                 'name' => 'Pendiente',
                 'is_final' => false,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'documents_pending',
                 'name' => 'Documentos pendientes',
                 'is_final' => false,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'evaluation_pending',
                 'name' => 'Evaluación pendiente',
                 'is_final' => false,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'payment_pending',
                 'name' => 'Pago pendiente',
                 'is_final' => false,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'approved',
                 'name' => 'Aprobada',
                 'is_final' => false,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'completed',
                 'name' => 'Finalizada',
                 'is_final' => true,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'cancelled',
                 'name' => 'Cancelada',
                 'is_final' => true,
                 'status' => true,
+                'created_at' =>  now()
             ],
         ];
 

@@ -17,6 +17,7 @@ class CicloEscolarSeeder extends Seeder
                 'end_date' => '2026-07-31',
                 'is_current' => true,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => '2026-2027',
@@ -25,11 +26,12 @@ class CicloEscolarSeeder extends Seeder
                 'end_date' => '2027-07-31',
                 'is_current' => false,
                 'status' => true,
+                'created_at' =>  now()
             ],
         ];
 
         foreach ($ciclos as $ciclo) {
-            DB::table('cat_ciclos_escolares')
+            DB::table('ciclos_escolares')
                 ->updateOrInsert(
                     ['code' => $ciclo['code']],
                     $ciclo

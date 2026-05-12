@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             // RELACIONES
             $table->foreignId('expediente_id')->constrained('expedientes');
-            $table->foreignId('ciclo_escolar_id')->constrained('cat_ciclos_escolares');
+            $table->foreignId('ciclo_escolar_id')->constrained('ciclos_escolares');
             $table->foreignId('nivel_id')->constrained('cat_niveles');
             $table->foreignId('grado_id')->constrained('cat_grados');
             $table->foreignId('estado_inscripcion_id')->constrained('cat_estados_inscripcion');

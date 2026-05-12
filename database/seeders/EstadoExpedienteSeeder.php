@@ -17,6 +17,7 @@ class EstadoExpedienteSeeder extends Seeder
                 'is_final' => false,
                 'allows_inscription' => false,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'in_progress',
@@ -24,6 +25,7 @@ class EstadoExpedienteSeeder extends Seeder
                 'is_final' => false,
                 'allows_inscription' => false,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'evaluation',
@@ -31,6 +33,7 @@ class EstadoExpedienteSeeder extends Seeder
                 'is_final' => false,
                 'allows_inscription' => false,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'approved',
@@ -38,6 +41,7 @@ class EstadoExpedienteSeeder extends Seeder
                 'is_final' => false,
                 'allows_inscription' => true,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'enrolled',
@@ -45,6 +49,7 @@ class EstadoExpedienteSeeder extends Seeder
                 'is_final' => false,
                 'allows_inscription' => true,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'active_student',
@@ -52,6 +57,7 @@ class EstadoExpedienteSeeder extends Seeder
                 'is_final' => false,
                 'allows_inscription' => true,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'inactive',
@@ -59,6 +65,7 @@ class EstadoExpedienteSeeder extends Seeder
                 'is_final' => false,
                 'allows_inscription' => false,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'dropped',
@@ -66,6 +73,7 @@ class EstadoExpedienteSeeder extends Seeder
                 'is_final' => true,
                 'allows_inscription' => false,
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'graduated',
@@ -73,6 +81,7 @@ class EstadoExpedienteSeeder extends Seeder
                 'is_final' => true,
                 'allows_inscription' => false,
                 'status' => true,
+                'created_at' =>  now()
             ],
         ];
 

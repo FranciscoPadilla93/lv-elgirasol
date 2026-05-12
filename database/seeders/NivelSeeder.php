@@ -14,11 +14,13 @@ class NivelSeeder extends Seeder
                 'code' => 'preschool',
                 'name' => 'Preescolar',
                 'status' => true,
+                'created_at' =>  now()
             ],
             [
                 'code' => 'elementary',
                 'name' => 'Primaria',
                 'status' => true,
+                'created_at' =>  now()
             ],
         ];
 

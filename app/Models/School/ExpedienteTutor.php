@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Catalogs\Parentesco;
 use App\Models\User;
+use App\Models\School\Expediente;
+use App\Models\School\Tutor;
 
 class ExpedienteTutor extends Model
 {
@@ -61,7 +63,12 @@ class ExpedienteTutor extends Model
     }
 
     // SCOPES
-    public function scopePrimary($query)
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
+    public function scopePrimaryContact($query)
     {
         return $query->where('is_primary_contact', true);
     }

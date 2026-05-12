@@ -6,8 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\User;
+use App\Models\School\Expediente;
 use App\Models\School\ExpedienteTutor;
+use App\Models\Catalogs\Genero;
 
 class Tutor extends Model
 {
@@ -23,6 +26,7 @@ class Tutor extends Model
         'telefono',
         'telefono_secundario',
         'curp',
+        'genero_id',
         'empresa',
         'puesto',
         'user_id',
@@ -31,7 +35,27 @@ class Tutor extends Model
         'updated_by',
     ];
 
+    protected function casts(): array
+    {
+        return [];
+    }
+
     //RELACIONES
+    public function expedientes(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Expediente::class,
+            'expediente_tutores'
+        )
+        ->withPivot([
+            'parentesco_id',
+            'is_primary_contact',
+            'is_financial_responsible',
+            'status',
+        ])
+        ->withTimestamps();
+    }
+
     public function expedienteTutores(): HasMany
     {
         return $this->hasMany(ExpedienteTutor::class);
@@ -50,6 +74,11 @@ class Tutor extends Model
     public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function genero(): BelongsTo
+    {
+        return $this->belongsTo(Genero::class);
     }
 
     // ACCESSORS

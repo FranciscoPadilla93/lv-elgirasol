@@ -15,6 +15,7 @@ class ModuleSeeder extends Seeder
             'modules' => 'Modules',
             'permissions' => 'Permissions',
             'expedientes' => 'Expedientes',
+            'tutores' => 'Tutores',
         ];
 
         foreach ($modules as $code => $name) {

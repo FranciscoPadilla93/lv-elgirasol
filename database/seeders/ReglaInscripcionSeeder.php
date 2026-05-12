@@ -25,6 +25,10 @@ class ReglaInscripcionSeeder extends Seeder
                     'curp',
                     'medical_certificate',
                 ]),
+                'required_evaluations' => json_encode([
+                    'academic',
+                    'psychological'
+                ]),
                 'minimum_score' => null,
                 'status' => true,
                 'created_by' => 1,
@@ -42,6 +46,10 @@ class ReglaInscripcionSeeder extends Seeder
                     'curp',
                     'medical_certificate',
                     'address_proof',
+                ]),
+                'required_evaluations' => json_encode([
+                    'academic',
+                    'psychological'
                 ]),
                 'minimum_score' => 70,
                 'status' => true,

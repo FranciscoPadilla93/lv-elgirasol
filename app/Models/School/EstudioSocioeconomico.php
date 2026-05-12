@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
+use App\Models\School\Inscripcion;
 
 class EstudioSocioeconomico extends Model
 {
@@ -61,6 +62,11 @@ class EstudioSocioeconomico extends Model
     }
 
     // SCOPES
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
     public function scopeApproved($query)
     {
         return $query->where('is_approved', true);
@@ -69,5 +75,11 @@ class EstudioSocioeconomico extends Model
     public function scopePending($query)
     {
         return $query->where('is_approved', false);
+    }
+
+    // ACCESSOR
+    public function getIsSubmittedAttribute(): bool
+    {
+        return $this->submitted_at !== null;
     }
 }

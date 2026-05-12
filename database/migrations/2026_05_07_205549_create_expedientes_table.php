@@ -33,6 +33,34 @@ return new class extends Migration
             $table->foreignId('updated_by')->nullable()->constrained('users');
             $table->timestamps();
             $table->softDeletes();
+            // DOMICILIO
+            $table->string('colonia', 500);
+            $table->string('otra_colonia', 500)->nullable();
+            $table->string('calle', 500);
+            $table->string('numero_exterior', 20);
+            $table->string('numero_interior', 20)->nullable();
+            $table->string('codigo_postal', 5);
+            // DATOS COMPLEMENTARIOS
+            $table->text('procedencia_academica')->nullable();
+            $table->enum('tipo_escuela', [
+                'publica',
+                'privada',
+            ])->nullable();
+            $table->text('motivo_cambio')->nullable();
+            // CONSIDERACIONES MÉDICAS
+            $table->boolean('alergias')->default(false);
+            $table->string('alergias_descripcion', 250)->nullable();
+            $table->boolean('enfermedad_cronica')->default(false);
+            $table->string('enfermedad_cronica_descripcion', 250)->nullable();
+            $table->foreignId('grupo_sanguineo_id')->nullable()->constrained('cat_grupo_sanguineo');
+            $table->boolean('seguro_medico')->default(false);
+            $table->foreignId('tipo_seguro_medico_id')->nullable()->constrained('cat_tipo_seguro_medico');
+            $table->string('numero_poliza_seguro', 20)->nullable();
+            // RELIGIÓN
+            $table->string('religion', 250)->nullable();
+            $table->boolean('bautizado')->default(false);
+            $table->boolean('primera_comunion')->default(false);
+            $table->boolean('confirmado')->default(false);
             //ÍNDICES
             $table->index('nombre');
             $table->index('apellido_paterno');

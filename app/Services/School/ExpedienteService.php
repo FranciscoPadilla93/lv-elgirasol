@@ -3,7 +3,6 @@
 namespace App\Services\School;
 
 use App\Models\School\Expediente;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\Storage\UploadFileRepository;
 use App\Services\Media\ImageOptimizationService;
@@ -15,11 +14,23 @@ class ExpedienteService
         private ImageOptimizationService $imageOptimizationService
     ) {}
 
+    private function relations(): array
+    {
+        return [
+            'genero',
+            'estadoExpediente',
+            'grupoSanguineo',
+            'tipoSeguroMedico',
+        ];
+    }
+
     public function create(array $data): Expediente
     {
         return DB::transaction(function () use ($data) {
             // FOTO
-            if (isset($data['foto'])) {
+            //if (isset($data['foto'])) {
+            if (!empty($data['foto']))
+            {
                 $optimized = $this->imageOptimizationService
                     ->optimize($data['foto']);
 
@@ -35,17 +46,17 @@ class ExpedienteService
             $data['created_by'] = auth()->id();
             $expediente = Expediente::create($data);
 
-            return $expediente->load([
-                'genero',
-                'estadoExpediente',
-            ]);
+            return $expediente->load($this->relations());
         });
     }
 
-    public function update(Expediente $expediente,array $data): Expediente {
+    public function update(Expediente $expediente,array $data): Expediente
+    {
         return DB::transaction(function () use ($expediente, $data) {
             // FOTO
-            if (isset($data['foto'])) {
+            if (!empty($data['foto']))
+            {
+            //if (isset($data['foto'])) {
                 // ELIMINAR ANTERIOR
                 if ($expediente->foto_path) {
                     if ($this->uploadFileRepository->getTipoAlmacenamiento() == 'ftp') {
@@ -72,27 +83,25 @@ class ExpedienteService
             $expediente->update($data);
             $expediente->refresh();
 
-            return $expediente->load([
-                'genero',
-                'estadoExpediente',
-            ]);
+            return $expediente->load($this->relations());
         });
     }
 
     public function delete(Expediente $expediente): void
     {
-        DB::transaction(function () use ($expediente) {
-            // ELIMINAR FOTO
-            if ($expediente->foto_path) {
-                if ($this->uploadFileRepository->getTipoAlmacenamiento() == 'ftp') {
-                    $this->uploadFileRepository->deleteExistingFileFtp($expediente->foto_path, '/private');
-                } else {
-                    $this->uploadFileRepository->deleteExistingFile($expediente->foto_path, 'local');
-                }
-            }
+        // DB::transaction(function () use ($expediente) {
+        //     // ELIMINAR FOTO
+        //     if ($expediente->foto_path) {
+        //         if ($this->uploadFileRepository->getTipoAlmacenamiento() == 'ftp') {
+        //             $this->uploadFileRepository->deleteExistingFileFtp($expediente->foto_path, '/private');
+        //         } else {
+        //             $this->uploadFileRepository->deleteExistingFile($expediente->foto_path, 'local');
+        //         }
+        //     }
 
-            $expediente->delete();
-        });
+        //     $expediente->delete();
+        // });
+         $expediente->delete();
     }
 
     public function restore(int $id): ?Expediente
@@ -106,10 +115,7 @@ class ExpedienteService
 
             $expediente->restore();
 
-            return $expediente->load([
-                'genero',
-                'estadoExpediente',
-            ]);
+            return $expediente->load($this->relations());
         });
     }
 

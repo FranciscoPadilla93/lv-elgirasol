@@ -24,6 +24,8 @@ return new class extends Migration
             $table->boolean('requires_treasury_validation')->default(true);
             // DOCUMENTOS
             $table->json('required_documents')->nullable();
+            // EVALUACIONES
+            $table->json('required_evaluations')->nullable();
             // CONFIG EXTRA
             $table->unsignedTinyInteger('minimum_score')->nullable();
             $table->boolean('status')->default(true);

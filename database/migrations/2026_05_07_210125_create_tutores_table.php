@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('correo', 255)->nullable();
             $table->string('telefono', 20);
             $table->string('telefono_secundario', 20)->nullable();
-            $table->string('curp', 18)->nullable();
+            $table->string('curp', 18)->nullable()->unique();
+            $table->foreignId('genero_id')->constrained('cat_generos');
             // INFORMACIÓN LABORAL
             $table->string('empresa', 255)->nullable();
             $table->string('puesto', 255)->nullable();

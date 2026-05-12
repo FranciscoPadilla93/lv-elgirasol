@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Catalogs\Nivel;
 use App\Models\Catalogs\Grado;
 use App\Models\Catalogs\EstadoInscripcion;
+use App\Models\Catalogs\CicloEscolar;
 use App\Models\User;
 use App\Models\School\EvaluacionInicial;
 use App\Models\School\EstudioSocioeconomico;
@@ -95,7 +96,20 @@ class Inscripcion extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    public function cicloEscolar(): BelongsTo
+    {
+        return $this->belongsTo(CicloEscolar::class);
+    }
+
     // SCOPES
+    public function scopeActive($query)
+    {
+        return $query->whereHas(
+            'estadoInscripcion',
+            fn($q) => $q->where('code', 'active_student')
+        );
+    }
+
     public function scopeCompleted($query)
     {
         return $query->where('is_completed', true);
@@ -104,5 +118,18 @@ class Inscripcion extends Model
     public function scopePending($query)
     {
         return $query->where('is_completed', false);
+    }
+
+    public function getReglaInscripcionAttribute()
+    {
+        return ReglaInscripcion::query()
+            ->where('nivel_id', $this->nivel_id)
+            ->where('grado_id', $this->grado_id)
+            ->where(
+                'is_new_admission',
+                $this->is_new_admission
+            )
+            ->where('status', true)
+            ->first();
     }
 }

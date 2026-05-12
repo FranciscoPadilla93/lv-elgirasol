@@ -15,11 +15,13 @@ class GeneroSeeder extends Seeder
                 'code' => 'male',
                 'name' => 'Masculino',
                 'status' => 'active',
+                'created_at' =>  now()
             ],
             [
                 'code' => 'female',
                 'name' => 'Femenino',
                 'status' => 'active',
+                'created_at' =>  now()
             ],
         ];
 

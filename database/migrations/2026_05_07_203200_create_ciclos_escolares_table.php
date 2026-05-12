@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('cat_ciclos_escolares', function (Blueprint $table) {
+        Schema::create('ciclos_escolares', function (Blueprint $table) {
             $table->id();
             $table->string('code', 50) -> unique();
             $table->string('name', 100);

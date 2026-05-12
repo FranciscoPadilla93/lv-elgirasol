@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             // RELACIONES
             $table->foreignId('inscripcion_id')->constrained('inscripciones');
+            $table->foreignId('tipo_evaluacion_id')->constrained('cat_tipos_evaluacion');
             $table->foreignId('evaluated_by')->constrained('users');
             // INFORMACIÓN
             $table->unsignedTinyInteger('attempt')->default(1);

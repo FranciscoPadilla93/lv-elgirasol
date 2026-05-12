@@ -28,6 +28,7 @@ class RolePermissionSeeder extends Seeder
                 'modules',
                 'permissions',
                 'expedientes',
+                'tutores',
             ],
 
             'developer' => [
@@ -36,18 +37,22 @@ class RolePermissionSeeder extends Seeder
                 'modules',
                 'permissions',
                 'expedientes',
+                'tutores',
             ],
 
             'admin' => [
                 'users',
                 'roles',
                 'expedientes',
+                'tutores',
             ],
             'control_escolar' => [
                 'expedientes',
+                'tutores',
             ],
             'user' => [
                 'expedientes',
+                'tutores',
             ],
         ];
 

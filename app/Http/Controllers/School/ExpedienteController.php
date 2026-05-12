@@ -81,7 +81,7 @@ class ExpedienteController extends Controller
             'documentos.tipoDocumento',
             'contactos.parentesco',
             'inscripciones',
-            'expedienteTutores.tutor',
+            'tutores.tutor',
         ]);
 
         return ResponseHelper::success(

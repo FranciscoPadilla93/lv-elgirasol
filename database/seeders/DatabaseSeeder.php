@@ -29,6 +29,9 @@ class DatabaseSeeder extends Seeder
             TipoDocumentoSeeder::class,
             EstadoInscripcionSeeder::class,
             ReglaInscripcionSeeder::class,
+            GrupoSanguineoSeeder::class,
+            TipoSeguroMedicoSeeder::class,
+            TipoEvaluacionSeeder::class,
         ]);
     }
 }

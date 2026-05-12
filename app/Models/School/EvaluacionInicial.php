@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\User;
+use App\Models\School\Inscripcion;
+use App\Models\Catalogs\TipoEvaluacion;
 
 class EvaluacionInicial extends Model
 {
@@ -15,6 +17,7 @@ class EvaluacionInicial extends Model
 
     protected $fillable = [
         'inscripcion_id',
+        'tipo_evaluacion_id',
         'evaluated_by',
         'attempt',
         'evaluation_date',
@@ -57,7 +60,17 @@ class EvaluacionInicial extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    public function tipoEvaluacion(): BelongsTo
+    {
+        return $this->belongsTo(TipoEvaluacion::class);
+    }
+
     // SCOPES
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
     public function scopeApproved($query)
     {
         return $query->where('is_approved', true);
@@ -66,5 +79,10 @@ class EvaluacionInicial extends Model
     public function scopeRejected($query)
     {
         return $query->where('is_approved', false);
+    }
+
+    public function scopeLatestAttempt($query)
+    {
+        return $query->orderByDesc('attempt');
     }
 }
