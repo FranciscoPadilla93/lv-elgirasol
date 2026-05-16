@@ -40,7 +40,10 @@ class TutorService
 
     public function delete(Tutor $tutor): void
     {
-        $tutor->delete();
+        DB::transaction(function () use ($tutor) {
+            $tutor['updated_by'] = auth()->id();
+            $tutor->delete();
+        });
     }
 
     public function restore(int $id): ?Tutor
@@ -53,6 +56,7 @@ class TutorService
             }
 
             $tutor->restore();
+            $tutor['updated_by'] = auth()->id();
 
             return $tutor->load($this->relations());
         });

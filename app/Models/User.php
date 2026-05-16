@@ -20,15 +20,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-
-    /** @use HasFactory<UserFactory> */
     use HasActivityLogOptions, HasApiTokens, HasFactory, LogsActivity, Notifiable;
     use SoftDeletes;
 
-
     protected $fillable = [
         'name',
+        'apellido_paterno',
+        'apellido_materno',
         'email',
+        'puesto',
+        'cedula_profesional',
         'password',
         'role_id',
         'status',
@@ -53,24 +54,17 @@ class User extends Authenticatable
         ]);
     }
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-
-
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'status' => 'boolean'
         ];
     }
 
     public static function cacheStore(): Repository
     {
-        // return Cache::store('redis');
         return Cache::store(config('cache.default'));
     }
 
@@ -113,7 +107,7 @@ class User extends Authenticatable
 
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', true);
     }
 
     public function role(): BelongsTo
@@ -186,18 +180,7 @@ class User extends Authenticatable
             return true;
         }
 
-        // Solo super_admin puede manejar permisos de roles
-        if ($module === 'roles' && in_array($permission, ['create', 'assign_permissions'], true)) {
-            return false;
-        }
-
-        // Developer: todo menos gestión de permisos de roles
-        if ($this->hasRole('developer')) {
-            return true;
-        }
-
-        // Admin: todo menos assign_permissions
-        if ($this->hasRole('admin') && $permission !== 'assign_permissions') {
+        if ($this->hasRole('direccion_general')) {
             return true;
         }
 

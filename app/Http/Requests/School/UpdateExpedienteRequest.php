@@ -15,114 +15,119 @@ class UpdateExpedienteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // DATOS PERSONALES
-            'nombre' => ['sometimes', 'required', 'string', 'max:150'],
-            'apellido_paterno' => ['sometimes', 'required', 'string', 'max:150'],
-            'apellido_materno' => ['sometimes', 'nullable', 'string', 'max:150'],
-            'fecha_nacimiento' => ['sometimes', 'required', 'date'],
+            // DATOS GENERALES
+            'foto' => [
+                'sometimes',
+                'required',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:15360'
+            ],
+            'nombre' => ['sometimes','required', 'string', 'max:150'],
+            'apellido_paterno' => ['sometimes','required', 'string', 'max:150'],
+            'apellido_materno' => ['sometimes','nullable', 'string', 'max:150'],
+            'fecha_nacimiento' => ['sometimes','required', 'date'],
             'curp' => [
                 'sometimes',
-                'nullable',
+                'required',
                 'string',
                 'size:18',
                 Rule::unique('expedientes', 'curp')
                     ->ignore($this->route('expediente')->id)
                     ->whereNull('deleted_at'),
             ],
-            // RELACIONES
+            'estado_id' => [
+                'sometimes',
+                'required',
+                'integer',
+                Rule::exists('cat_estados', 'id')
+                    ->whereNull('deleted_at')
+                    ->where('status', true),
+            ],
             'genero_id' => [
                 'sometimes',
-                'required',
+                'nullable',
                 'integer',
-                'exists:cat_generos,id',
+                Rule::exists('cat_generos', 'id')
+                    ->whereNull('deleted_at')
+                    ->where('status', true),
             ],
-            'estado_expediente_id' => [
-                'sometimes',
-                'required',
-                'integer',
-                'exists:cat_estados_expediente,id',
-            ],
-
-            // INFORMACIÓN GENERAL
-            'fecha_ingreso' => ['sometimes', 'nullable', 'date'],
+            'fecha_ingreso' => ['sometimes','nullable', 'date'],
             'fecha_baja' => [
                 'sometimes',
                 'nullable',
                 'date',
-                'after_or_equal:fecha_ingreso',
+                'after_or_equal:fecha_ingreso'
             ],
-            'motivo_baja' => ['sometimes', 'nullable', 'string'],
-            'observaciones' => ['sometimes', 'nullable', 'string'],
-            // FOTO
-            'foto' => [
-                'sometimes',
-                'nullable',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120',
-            ],
+            'motivo_baja' => ['sometimes','nullable', 'string'],
+            'observaciones' => ['sometimes','nullable', 'string'],
+
             // DOMICILIO
-            'colonia' => ['sometimes', 'required', 'string', 'max:500'],
-            'otra_colonia' => ['sometimes', 'nullable', 'string', 'max:500'],
-            'calle' => ['sometimes', 'required', 'string', 'max:500'],
-            'numero_exterior' => ['sometimes', 'required', 'string', 'max:20'],
-            'numero_interior' => ['sometimes', 'nullable', 'string', 'max:20'],
-            'codigo_postal' => ['sometimes', 'required', 'digits:5'],
+            'colonia' => ['sometimes','required', 'string', 'max:500'],
+            'otra_colonia' => ['sometimes','nullable', 'string', 'max:500'],
+            'calle' => ['sometimes','required', 'string', 'max:500'],
+            'numero_exterior' => ['sometimes','required','string','max:20'],
+            'numero_interior' => ['sometimes','nullable','string','max:20'],
+            'codigo_postal' => ['sometimes','required', 'digits:5'],
             // DATOS COMPLEMENTARIOS
-            'procedencia_academica' => ['sometimes', 'nullable', 'string'],
+            'procedencia_academica' => ['sometimes','required','string','max:1000'],
             'tipo_escuela' => [
                 'sometimes',
-                'nullable',
-                Rule::in([
-                    'publica',
-                    'privada',
-                ]),
-            ],
-
-            'motivo_cambio' => ['sometimes', 'nullable', 'string'],
+                'required',
+                Rule::in(['publica', 'privada',
+                ])],
+            'motivo_cambio' => ['sometimes','nullable','string','max:1500'],
             // CONSIDERACIONES MÉDICAS
-            'alergias' => ['sometimes', 'nullable', 'boolean'],
+            'alergias' => ['sometimes','required','boolean'],
             'alergias_descripcion' => [
-                'sometimes',
-                'nullable',
-                'string',
-                'max:250',
                 'required_if:alergias,true',
-            ],
-            'enfermedad_cronica' => ['sometimes', 'nullable', 'boolean'],
-            'enfermedad_cronica_descripcion' => [
-                'sometimes',
                 'nullable',
+                'array',
+            ],
+            'alergias_descripcion.*' => [
+                'required',
                 'string',
                 'max:250',
+            ],
+            'enfermedad_cronica' => ['sometimes','required','boolean',],
+            'enfermedad_cronica_descripcion' => [
                 'required_if:enfermedad_cronica,true',
+                'nullable',
+                'array',
+            ],
+            'enfermedad_cronica_descripcion.*' => [
+                'required',
+                'string',
+                'max:250',
             ],
             'grupo_sanguineo_id' => [
                 'sometimes',
-                'nullable',
+                'required',
                 'integer',
-                'exists:cat_grupo_sanguineo,id',
+                Rule::exists('cat_grupo_sanguineo', 'id')
+                    ->whereNull('deleted_at')
+                    ->where('status', true),
             ],
-            'seguro_medico' => ['sometimes', 'nullable', 'boolean'],
+            'seguro_medico' => ['sometimes','required','boolean'],
             'tipo_seguro_medico_id' => [
-                'sometimes',
                 'nullable',
                 'integer',
-                'exists:cat_tipo_seguro_medico,id',
                 'required_if:seguro_medico,true',
+                Rule::exists('cat_tipo_seguro_medico', 'id')
+                    ->whereNull('deleted_at')
+                    ->where('status', true),
             ],
             'numero_poliza_seguro' => [
-                'sometimes',
                 'nullable',
                 'string',
                 'max:20',
-                'required_if:seguro_medico,true',
+                'required_if:seguro_medico,true'
             ],
             // RELIGIÓN
-            'religion' => ['sometimes', 'nullable', 'string', 'max:250'],
-            'bautizado' => ['sometimes', 'nullable', 'boolean'],
-            'primera_comunion' => ['sometimes', 'nullable', 'boolean'],
-            'confirmado' => ['sometimes', 'nullable', 'boolean'],
+            'religion' => ['sometimes','required','string','max:250'],
+            'bautizado' => ['sometimes','required','boolean'],
+            'primera_comunion' => ['sometimes','required','boolean'],
+            'confirmado' => ['sometimes','required','boolean'],
         ];
     }
 

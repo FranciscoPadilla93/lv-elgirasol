@@ -17,6 +17,8 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'apellido_paterno' => ['sometimes', 'required', 'string', 'max:255'],
+            'apellido_materno' => ['sometimes', 'required', 'string', 'max:255'],
             'email' => [
                 'sometimes',
                 'required',
@@ -24,9 +26,11 @@ class UpdateUserRequest extends FormRequest
                 'max:255',
                 Rule::unique('users', 'email')->ignore($this->route('user')),
             ],
+            'puesto' => ['sometimes', 'required', 'string', 'max:255'],
+            'cedula_profesional' => ['sometimes', 'required', 'string', 'max:255'],
             'password' => ['nullable', 'string', 'min:8'],
             'role_id' => ['sometimes', 'nullable', 'integer', 'exists:roles,id'],
-            'status' => ['sometimes', 'required', 'string', Rule::in(['active', 'inactive'])],
+            'status' => ['sometimes', 'required', 'boolean'],
         ];
     }
 

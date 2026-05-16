@@ -102,7 +102,20 @@ class ExpedienteDocumentoController extends Controller
         $ftpServer = config('storage.ftp.host');
         $ftpUsername = config('storage.ftp.username');
         $ftpPassword = config('storage.ftp.password');
-        $ftpConnection = ftp_connect($ftpServer);
+        $ftpPort = (int) config('storage.ftp.port', 21);
+
+        $ftpConnection = ftp_connect(
+            $ftpServer,
+            $ftpPort,
+            30
+        );
+
+        if (! $ftpConnection) {
+            return ResponseHelper::error(
+                'Error conexión FTP.',
+                500
+            );
+        }
 
         ftp_set_option(
             $ftpConnection,
@@ -116,22 +129,32 @@ class ExpedienteDocumentoController extends Controller
             $ftpPassword
         );
 
-        ftp_pasv($ftpConnection, true);
+        if (! $ftpLogin) {
+            ftp_close($ftpConnection);
 
-        if (! $ftpConnection || ! $ftpLogin) {
             return ResponseHelper::error(
                 'Error conexión FTP.',
                 500
             );
         }
 
+        ftp_pasv($ftpConnection, true);
+
         $temp = tmpfile();
         $meta = stream_get_meta_data($temp);
         $tempPath = $meta['uri'];
 
-        $remotePath =
-            '/private/' .
-            $expedienteDocumento->file_path;
+        $remoteRoot = trim(
+            config('storage.ftp.root', '/private'),
+            '/'
+        );
+
+        $filePath = ltrim(
+            $expedienteDocumento->file_path,
+            '/'
+        );
+
+        $remotePath = '/' . $remoteRoot . '/' . $filePath;
 
         $result = ftp_get(
             $ftpConnection,
@@ -155,8 +178,7 @@ class ExpedienteDocumentoController extends Controller
             $tempPath,
             $expedienteDocumento->original_name,
             [
-                'Content-Type' =>
-                    $expedienteDocumento->mime_type,
+                'Content-Type' => $expedienteDocumento->mime_type,
             ]
         )->deleteFileAfterSend(true);
     }

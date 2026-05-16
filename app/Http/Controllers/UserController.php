@@ -45,7 +45,8 @@ class UserController extends Controller
                         ->orWhere('email', 'like', "%{$search}%");
                 });
             })
-            ->latest()
+            ->orderBy('role_id', 'asc')
+            ->orderBy('id', 'asc')
             ->paginate($perPage, ['*'], 'page', $page);
     }
 

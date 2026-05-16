@@ -79,8 +79,7 @@ class ExpedienteContactoController extends Controller
     }
 
     public function restore(int $id): JsonResponse {
-        $contacto = $this->expedienteContactoService
-            ->restore($id);
+        $contacto = $this->expedienteContactoService->restore($id);
 
         if (!$contacto) {
 

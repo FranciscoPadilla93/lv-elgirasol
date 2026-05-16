@@ -16,7 +16,7 @@ class ReglaInscripcion extends Model
     protected $fillable = [
         'nivel_id',
         'grado_id',
-        'is_new_admission',
+        // 'is_new_admission',
         'requires_evaluation',
         'requires_socioeconomic_study',
         'requires_treasury_validation',
@@ -31,7 +31,7 @@ class ReglaInscripcion extends Model
     protected function casts(): array
     {
         return [
-            'is_new_admission' => 'boolean',
+            // 'is_new_admission' => 'boolean',
             'requires_socioeconomic_study' => 'boolean',
             'requires_treasury_validation' => 'boolean',
             'requires_evaluation' => 'boolean',

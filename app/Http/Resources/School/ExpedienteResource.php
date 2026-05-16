@@ -25,10 +25,16 @@ class ExpedienteResource extends JsonResource
 
             'fecha_nacimiento' => $this->fecha_nacimiento?->format('Y-m-d'),
             'curp' => $this->curp,
-
+            // ESTADO
+            'estado' => $this->whenLoaded('estado', function () {
+                return [
+                    'id' => $this->estado->id,
+                    'code' => $this->estado->code,
+                    'name' => $this->estado->name,
+                ];
+            }),
             // GÉNERO
             'genero' => $this->whenLoaded('genero', function () {
-
                 return [
                     'id' => $this->genero->id,
                     'code' => $this->genero->code,

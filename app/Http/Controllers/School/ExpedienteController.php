@@ -20,53 +20,7 @@ class ExpedienteController extends Controller
     ) {}
 
     public function index(IndexExpedienteRequest $request): JsonResponse {
-        $search = $request->string('search')->toString();
-        $perPage = $request->integer('per_page', 15);
-        $sortBy = $request->string('sort_by')->toString() ?: 'id';
-        $sortDirection = $request->string('sort_direction')->toString() ?: 'desc';
-        $expedientes = Expediente::query()
-            ->with([
-                'genero',
-                'estadoExpediente',
-            ])
-
-            // SEARCH
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('folio', 'LIKE', "%{$search}%")
-                        ->orWhere('nombre', 'LIKE', "%{$search}%")
-                        ->orWhere('apellido_paterno', 'LIKE', "%{$search}%")
-                        ->orWhere('apellido_materno', 'LIKE', "%{$search}%")
-                        ->orWhere('curp', 'LIKE', "%{$search}%");
-                });
-            })
-
-            // FILTROS
-            ->when(
-                $request->filled('estado_expediente_id'),
-                function ($query) use ($request) {
-                    $query->where(
-                        'estado_expediente_id',
-                        $request->estado_expediente_id
-                    );
-                }
-            )
-
-            ->when(
-                $request->filled('genero_id'),
-                function ($query) use ($request) {
-                    $query->where(
-                        'genero_id',
-                        $request->genero_id
-                    );
-                }
-            )
-
-            // ORDENAMIENTO
-            ->orderBy($sortBy, $sortDirection)
-
-            // PAGINACIÓN
-            ->paginate($perPage);
+        $expedientes = $this->expedienteService->paginate($request->validated());
 
         return ResponseHelper::success(
             ExpedienteResource::collection($expedientes),
@@ -75,14 +29,7 @@ class ExpedienteController extends Controller
     }
 
     public function show(Expediente $expediente): JsonResponse {
-        $expediente->load([
-            'genero',
-            'estadoExpediente',
-            'documentos.tipoDocumento',
-            'contactos.parentesco',
-            'inscripciones',
-            'tutores.tutor',
-        ]);
+        $expediente = $this->expedienteService->find($expediente);
 
         return ResponseHelper::success(
             new ExpedienteResource($expediente),
@@ -92,11 +39,8 @@ class ExpedienteController extends Controller
 
     public function store(StoreExpedienteRequest $request): JsonResponse {
         $data = $request->validated();
-
         $data['foto'] = $request->allFiles()['foto'] ?? null;
-
-        $expediente = $this->expedienteService
-            ->create($data);
+        $expediente = $this->expedienteService->create($data);
 
         return ResponseHelper::success(
             new ExpedienteResource(
@@ -107,12 +51,14 @@ class ExpedienteController extends Controller
         );
     }
 
-    public function update(UpdateExpedienteRequest $request,Expediente $expediente): JsonResponse {
-        $expediente = $this->expedienteService
-            ->update(
-                $expediente,
-                $request->validated()
-            );
+    public function update(UpdateExpedienteRequest $request, Expediente $expediente): JsonResponse {
+        $data = $request->validated();
+        $data['foto'] = $request->allFiles()['foto'] ?? null;
+
+        $expediente = $this->expedienteService->update(
+            $expediente,
+            $data
+        );
 
         return ResponseHelper::success(
             new ExpedienteResource($expediente),
@@ -121,8 +67,7 @@ class ExpedienteController extends Controller
     }
 
     public function destroy(Expediente $expediente): JsonResponse {
-        $this->expedienteService
-            ->delete($expediente);
+        $this->expedienteService->delete($expediente);
 
         return ResponseHelper::success(
             null,
@@ -131,8 +76,7 @@ class ExpedienteController extends Controller
     }
 
     public function restore(int $id): JsonResponse {
-        $expediente = $this->expedienteService
-            ->restore($id);
+        $expediente = $this->expedienteService->restore($id);
 
         if (!$expediente) {
             return ResponseHelper::error(

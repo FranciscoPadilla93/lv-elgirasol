@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('fecha_nacimiento');
             $table->string('curp', 18)->nullable()->unique();
             $table->foreignId('genero_id')->constrained('cat_generos');
+            $table->foreignId('estado_id')->constrained('cat_estados');
             // ESTATUS EXPEDIENTE
             $table->foreignId('estado_expediente_id')->constrained('cat_estados_expediente');
             // INFORMACIÓN GENERAL
@@ -49,9 +50,9 @@ return new class extends Migration
             $table->text('motivo_cambio')->nullable();
             // CONSIDERACIONES MÉDICAS
             $table->boolean('alergias')->default(false);
-            $table->string('alergias_descripcion', 250)->nullable();
+            $table->json('alergias_descripcion', 250)->nullable();
             $table->boolean('enfermedad_cronica')->default(false);
-            $table->string('enfermedad_cronica_descripcion', 250)->nullable();
+            $table->json('enfermedad_cronica_descripcion', 250)->nullable();
             $table->foreignId('grupo_sanguineo_id')->nullable()->constrained('cat_grupo_sanguineo');
             $table->boolean('seguro_medico')->default(false);
             $table->foreignId('tipo_seguro_medico_id')->nullable()->constrained('cat_tipo_seguro_medico');

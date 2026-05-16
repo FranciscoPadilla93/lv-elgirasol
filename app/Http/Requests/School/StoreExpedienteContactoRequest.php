@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\School;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreExpedienteContactoRequest extends FormRequest
 {
@@ -18,21 +18,20 @@ class StoreExpedienteContactoRequest extends FormRequest
             'parentesco_id' => [
                 'required',
                 'integer',
-                'exists:cat_parentescos,id',
+                Rule::exists('cat_parentescos', 'id')
+                    ->whereNull('deleted_at')
+                    ->where('status', true),
+            ],
+            'tipo_contacto_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('cat_tipo_contacto', 'id')
+                    ->whereNull('deleted_at')
+                    ->where('status', true),
             ],
             // DATOS PERSONALES
-            'nombre' => [
+            'nombre_completo' => [
                 'required',
-                'string',
-                'max:150',
-            ],
-            'apellido_paterno' => [
-                'required',
-                'string',
-                'max:150',
-            ],
-            'apellido_materno' => [
-                'nullable',
                 'string',
                 'max:150',
             ],
@@ -42,35 +41,32 @@ class StoreExpedienteContactoRequest extends FormRequest
                 'string',
                 'max:20',
             ],
-            'telefono_secundario' => [
-                'nullable',
-                'string',
-                'max:20',
-            ],
             'correo' => [
-                'nullable',
+                'required',
                 'email',
                 'max:255',
             ],
-
-            // CONFIGURACIÓN
-            'is_emergency_contact' => [
-                'nullable',
+            'uso_obligado' => [
+                'required',
                 'boolean',
-            ],
-            'is_authorized_pickup' => [
-                'nullable',
-                'boolean',
-            ],
-            'status' => [
-                'nullable',
-                'boolean',
-            ],
-            // OBSERVACIONES
-            'observaciones' => [
-                'nullable',
-                'string',
             ],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $booleanFields = [
+            'status',
+        ];
+
+        $data = [];
+
+        foreach ($booleanFields as $field) {
+            if ($this->has($field)) {
+                $data[$field] = filter_var($this->$field, FILTER_VALIDATE_BOOLEAN);
+            }
+        }
+
+        $this->merge($data);
     }
 }

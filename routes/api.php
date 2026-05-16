@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\Auth\MenuController as AuthMenuController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RolePermissionController;
@@ -16,6 +17,11 @@ use App\Http\Controllers\School\ExpedienteTutorController;
 use App\Http\Controllers\School\InscripcionController;
 use App\Http\Controllers\School\EvaluacionInicialController;
 use App\Http\Controllers\School\EstudioSocioeconomicoController;
+use App\Http\Controllers\School\CicloEscolarController;
+use App\Http\Controllers\School\IntranetUserController;
+use App\Http\Controllers\School\ConceptoController;
+use App\Http\Controllers\School\ConceptoCicloEscolarController;
+use App\Http\Controllers\Catalog\CatalogController;
 
 Route::post('/v1/login', [AuthController::class, 'login'])
     ->middleware('throttle:5,1');
@@ -26,6 +32,7 @@ Route::middleware(['access.token.cookie', 'auth:sanctum', 'active.user'])
         Route::post('/logout', [AuthController::class, 'logout']);
 
         Route::get('/me', [SessionController::class, 'me']);
+        Route::get('/me/menus', [AuthMenuController::class, 'index']);
 
         // USUARIOS
         Route::get('/users', [UserController::class, 'index'])
@@ -64,6 +71,13 @@ Route::middleware(['access.token.cookie', 'auth:sanctum', 'active.user'])
 
         Route::post('/roles/{role}/permissions/sync', [RolePermissionController::class, 'sync'])
             ->middleware('permission:roles,assign_permissions');
+
+        // CATÁLOGOS DINÁMICOS
+        Route::get('/catalogs', [CatalogController::class, 'index'])
+            ->middleware('permission:catalogs,read');
+
+        Route::get('/catalogs/{catalog}', [CatalogController::class, 'show'])
+            ->middleware('permission:catalogs,read');
 
         // EXPEDIENTES (ALUMNOS)
         Route::get('/expedientes', [ExpedienteController::class, 'index'])
@@ -195,6 +209,63 @@ Route::middleware(['access.token.cookie', 'auth:sanctum', 'active.user'])
         Route::post('/evaluaciones-iniciales/{id}/restore', [EvaluacionInicialController::class, 'restore'])
             ->middleware('permission:evaluaciones,update');
 
+        // CICLOS ESCOLARES
+        Route::get('/ciclos-escolares', [CicloEscolarController::class, 'index'])
+            ->middleware('permission:evaluaciones,read');
+
+        Route::get('/ciclos-escolares/{cicloEscolar}', [CicloEscolarController::class, 'show'])
+            ->middleware('permission:evaluaciones,read');
+
+        Route::post('/ciclos-escolares', [CicloEscolarController::class, 'store'])
+            ->middleware('permission:evaluaciones,create');
+
+        Route::put('/ciclos-escolares/{cicloEscolar}', [CicloEscolarController::class, 'update'])
+            ->middleware('permission:evaluaciones,update');
+
+        Route::delete('/ciclos-escolares/{cicloEscolar}', [CicloEscolarController::class, 'destroy'])
+            ->middleware('permission:evaluaciones,delete');
+
+        Route::post('/ciclos-escolares/{id}/restore', [CicloEscolarController::class, 'restore'])
+            ->middleware('permission:evaluaciones,update');
+
+        // CONCEPTOS
+        Route::get('/conceptos', [ConceptoController::class, 'index'])
+            ->middleware('permission:conceptos,read');
+
+        Route::get('/conceptos/{concepto}', [ConceptoController::class, 'show'])
+            ->middleware('permission:conceptos,read');
+
+        Route::post('/conceptos', [ConceptoController::class, 'store'])
+            ->middleware('permission:conceptos,create');
+
+        Route::put('/conceptos/{concepto}', [ConceptoController::class, 'update'])
+            ->middleware('permission:conceptos,update');
+
+        Route::delete('/conceptos/{concepto}', [ConceptoController::class, 'destroy'])
+            ->middleware('permission:conceptos,delete');
+
+        Route::post('/conceptos/{id}/restore', [ConceptoController::class, 'restore'])
+            ->middleware('permission:conceptos,update');
+
+        // CONCEPTOS POR CICLO ESCOLAR
+        Route::get('/conceptos-ciclos-escolares', [ConceptoCicloEscolarController::class, 'index'])
+            ->middleware('permission:conceptos_ciclos_escolares,read');
+
+        Route::get('/conceptos-ciclos-escolares/{conceptoCicloEscolar}', [ConceptoCicloEscolarController::class, 'show'])
+            ->middleware('permission:conceptos_ciclos_escolares,read');
+
+        Route::post('/conceptos-ciclos-escolares', [ConceptoCicloEscolarController::class, 'store'])
+            ->middleware('permission:conceptos_ciclos_escolares,create');
+
+        Route::put('/conceptos-ciclos-escolares/{conceptoCicloEscolar}', [ConceptoCicloEscolarController::class, 'update'])
+            ->middleware('permission:conceptos_ciclos_escolares,update');
+
+        Route::delete('/conceptos-ciclos-escolares/{conceptoCicloEscolar}', [ConceptoCicloEscolarController::class, 'destroy'])
+            ->middleware('permission:conceptos_ciclos_escolares,delete');
+
+        Route::post('/conceptos-ciclos-escolares/{id}/restore', [ConceptoCicloEscolarController::class, 'restore'])
+            ->middleware('permission:conceptos_ciclos_escolares,update');
+
         // ESTUDIOS SOCIOECONOMICOS
         Route::get('/estudios-socioeconomicos', [EstudioSocioeconomicoController::class, 'index'])
             ->middleware('permission:estudios_socioeconomicos,read');
@@ -213,4 +284,23 @@ Route::middleware(['access.token.cookie', 'auth:sanctum', 'active.user'])
 
         Route::post('/estudios-socioeconomicos/{id}/restore', [EstudioSocioeconomicoController::class, 'restore'])
             ->middleware('permission:estudios_socioeconomicos,update');
+
+        // INTRANET USUARIOS
+        Route::get('/intranet-users', [IntranetUserController::class, 'index'])
+            ->middleware('permission:intranet_users,read');
+
+        Route::get('/intranet-users/{intranetUser}', [IntranetUserController::class, 'show'])
+            ->middleware('permission:intranet_users,read');
+
+        Route::post('/intranet-users', [IntranetUserController::class, 'store'])
+            ->middleware('permission:intranet_users,create');
+
+        Route::put('/intranet-users/{intranetUser}', [IntranetUserController::class, 'update'])
+            ->middleware('permission:intranet_users,update');
+
+        Route::delete('/intranet-users/{intranetUser}', [IntranetUserController::class, 'destroy'])
+            ->middleware('permission:intranet_users,delete');
+
+        Route::post('/intranet-users/{id}/restore', [IntranetUserController::class, 'restore'])
+            ->middleware('permission:intranet_users,update');
     });

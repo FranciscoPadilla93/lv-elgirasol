@@ -3,12 +3,16 @@
 namespace App\Services\School;
 
 use App\Models\School\EstudioSocioeconomico;
-use App\Models\Catalogs\EstadoInscripcion;
+use App\Services\School\WorkflowInscripcionService;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
 class EstudioSocioeconomicoService
 {
+    public function __construct(
+        private WorkflowInscripcionService $workflowInscripcionService
+    ) {}
+
     private function relations(): array
     {
         return [
@@ -40,15 +44,15 @@ class EstudioSocioeconomicoService
             $data['created_by'] = auth()->id();
             $estudio = EstudioSocioeconomico::create($data);
 
-            // ACTUALIZAR WORKFLOW
-            $this->updateInscripcionWorkflow(
-                $inscripcion,
-                $estudio
-            );
+            // ACTUALIZAR FLAG
+            $inscripcion->socioeconomic_study_approved = (bool) $estudio->is_approved;
+            $inscripcion->save();
 
-            return $estudio->load(
-                $this->relations()
-            );
+            // ACTUALIZAR WORKFLOW CENTRAL
+            $this->workflowInscripcionService
+                ->refresh($inscripcion);
+
+            return $estudio->load($this->relations());
         });
     }
 
@@ -60,25 +64,38 @@ class EstudioSocioeconomicoService
                 $data['approved_by'] = auth()->id();
             }
 
+            // SI SE RECHAZA / DESAPRUEBA, LIMPIAR APROBACIÓN
+            if (array_key_exists('is_approved', $data) && !$data['is_approved']) {
+                $data['approved_at'] = null;
+                $data['approved_by'] = null;
+            }
+
             // AUDITORÍA
             $data['updated_by'] = auth()->id();
             $estudioSocioeconomico->update($data);
             $estudioSocioeconomico->refresh();
 
-            // ACTUALIZAR WORKFLOW
-            $this->updateInscripcionWorkflow(
-                $estudioSocioeconomico->inscripcion,
-                $estudioSocioeconomico
-            );
+            $inscripcion = $estudioSocioeconomico->inscripcion;
 
-            return $estudioSocioeconomico->load(
-                $this->relations()
-            );
+            // ACTUALIZAR FLAG
+            $inscripcion->socioeconomic_study_approved = (bool) $estudioSocioeconomico->is_approved;
+            $inscripcion->save();
+
+            // ACTUALIZAR WORKFLOW CENTRAL
+            $this->workflowInscripcionService->refresh($inscripcion);
+            return $estudioSocioeconomico->load($this->relations());
         });
     }
 
     public function delete(EstudioSocioeconomico $estudioSocioeconomico): void {
-        $estudioSocioeconomico->delete();
+        DB::transaction(function () use ($estudioSocioeconomico) {
+            $estudioSocioeconomico->delete();
+
+             $estudioSocioeconomico->update([
+                'status' => false,
+                'updated_by' => auth()->id()
+            ]);
+        });
     }
 
     public function restore(int $id): ?EstudioSocioeconomico
@@ -92,6 +109,11 @@ class EstudioSocioeconomicoService
 
             $estudio->restore();
 
+            $estudio->update([
+                'status' => true,
+                'updated_by' => auth()->id()
+            ]);
+
             return $estudio->load(
                 $this->relations()
             );
@@ -102,30 +124,5 @@ class EstudioSocioeconomicoService
     {
         return \App\Models\School\Inscripcion::query()
             ->findOrFail($data['inscripcion_id']);
-    }
-
-    private function updateInscripcionWorkflow($inscripcion, EstudioSocioeconomico $estudio): void {
-        // ACTUALIZAR FLAG
-        $inscripcion->socioeconomic_study_approved = $estudio->is_approved;
-
-        // ESTADO
-        $estadoCode = $estudio->is_approved
-            ? 'payment_pending'
-            : 'documents_pending';
-
-        // OBTENER ESTADO
-        $estado = EstadoInscripcion::query()
-            ->where('code', $estadoCode)
-            ->first();
-
-        if (!$estado) {
-            throw new Exception(
-                'Estado de inscripción inválido.'
-            );
-        }
-
-        $inscripcion->estado_inscripcion_id = $estado->id;
-
-        $inscripcion->save();
     }
 }

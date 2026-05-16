@@ -16,19 +16,41 @@ class ReglaInscripcionSeeder extends Seeder
             [
                 'nivel_id' => $niveles['preschool'],
                 'grado_id' => $grados['1_preschool'],
-                'is_new_admission' => true,
+                // 'is_new_admission' => true,
                 'requires_evaluation' => false,
                 'requires_socioeconomic_study' => true,
                 'requires_treasury_validation' => true,
-                'required_documents' => json_encode([
-                    'birth_certificate',
-                    'curp',
-                    'medical_certificate',
-                ]),
-                'required_evaluations' => json_encode([
-                    'academic',
-                    'psychological'
-                ]),
+                // 'required_documents' => json_encode([
+                //     'birth_certificate',
+                //     'curp',
+                //     'medical_certificate',
+                // ]),
+                // 'required_evaluations' => json_encode([
+                //     'academic',
+                //     'psychological'
+                // ]),
+                'minimum_score' => null,
+                'status' => true,
+                'created_by' => 1,
+            ],
+            [
+                'nivel_id' => $niveles['preschool'],
+                'grado_id' => $grados['2_preschool'],
+                // 'is_new_admission' => true,
+                'requires_evaluation' => false,
+                'requires_socioeconomic_study' => false,
+                'requires_treasury_validation' => true,
+                'minimum_score' => null,
+                'status' => true,
+                'created_by' => 1,
+            ],
+            [
+                'nivel_id' => $niveles['preschool'],
+                'grado_id' => $grados['3_preschool'],
+                // 'is_new_admission' => true,
+                'requires_evaluation' => false,
+                'requires_socioeconomic_study' => false,
+                'requires_treasury_validation' => true,
                 'minimum_score' => null,
                 'status' => true,
                 'created_by' => 1,
@@ -37,24 +59,64 @@ class ReglaInscripcionSeeder extends Seeder
             [
                 'nivel_id' => $niveles['elementary'],
                 'grado_id' => $grados['1_elementary'],
-                'is_new_admission' => true,
-                'requires_evaluation' => true,
+                'requires_evaluation' => false,
                 'requires_socioeconomic_study' => true,
                 'requires_treasury_validation' => true,
-                'required_documents' => json_encode([
-                    'birth_certificate',
-                    'curp',
-                    'medical_certificate',
-                    'address_proof',
-                ]),
-                'required_evaluations' => json_encode([
-                    'academic',
-                    'psychological'
-                ]),
-                'minimum_score' => 70,
+                'minimum_score' => null,
                 'status' => true,
                 'created_by' => 1,
             ],
+            [
+                'nivel_id' => $niveles['elementary'],
+                'grado_id' => $grados['2_elementary'],
+                'requires_evaluation' => false,
+                'requires_socioeconomic_study' => false,
+                'requires_treasury_validation' => true,
+                'minimum_score' => null,
+                'status' => true,
+                'created_by' => 1,
+            ],
+            [
+                'nivel_id' => $niveles['elementary'],
+                'grado_id' => $grados['3_elementary'],
+                'requires_evaluation' => false,
+                'requires_socioeconomic_study' => true,
+                'requires_treasury_validation' => true,
+                'minimum_score' => null,
+                'status' => true,
+                'created_by' => 1,
+            ],
+            [
+                'nivel_id' => $niveles['elementary'],
+                'grado_id' => $grados['4_elementary'],
+                'requires_evaluation' => false,
+                'requires_socioeconomic_study' => false,
+                'requires_treasury_validation' => true,
+                'minimum_score' => null,
+                'status' => true,
+                'created_by' => 1,
+            ],
+            [
+                'nivel_id' => $niveles['elementary'],
+                'grado_id' => $grados['5_elementary'],
+                'requires_evaluation' => false,
+                'requires_socioeconomic_study' => true,
+                'requires_treasury_validation' => true,
+                'minimum_score' => null,
+                'status' => true,
+                'created_by' => 1,
+            ],
+             [
+                'nivel_id' => $niveles['elementary'],
+                'grado_id' => $grados['6_elementary'],
+                'requires_evaluation' => false,
+                'requires_socioeconomic_study' => false,
+                'requires_treasury_validation' => true,
+                'minimum_score' => null,
+                'status' => true,
+                'created_by' => 1,
+            ],
+
         ];
 
         foreach ($rules as $rule) {
@@ -63,7 +125,6 @@ class ReglaInscripcionSeeder extends Seeder
                     [
                         'nivel_id' => $rule['nivel_id'],
                         'grado_id' => $rule['grado_id'],
-                        'is_new_admission' => $rule['is_new_admission'],
                     ],
                     $rule
                 );

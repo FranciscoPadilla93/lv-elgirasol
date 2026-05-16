@@ -30,6 +30,9 @@ class ExpedienteTutor extends Model
     protected function casts(): array
     {
         return [
+            'expediente_id' => 'integer',
+            'tutor_id' => 'integer',
+            'parentesco_id' => 'integer',
             'is_primary_contact' => 'boolean',
             'is_financial_responsible' => 'boolean',
             'status' => 'boolean',
@@ -39,17 +42,17 @@ class ExpedienteTutor extends Model
     // RELACIONES
     public function expediente(): BelongsTo
     {
-        return $this->belongsTo(Expediente::class);
+        return $this->belongsTo(Expediente::class, 'expediente_id');
     }
 
     public function tutor(): BelongsTo
     {
-        return $this->belongsTo(Tutor::class);
+        return $this->belongsTo(Tutor::class, 'tutor_id');
     }
 
     public function parentesco(): BelongsTo
     {
-        return $this->belongsTo(Parentesco::class);
+        return $this->belongsTo(Parentesco::class, 'parentesco_id');
     }
 
     public function createdBy(): BelongsTo

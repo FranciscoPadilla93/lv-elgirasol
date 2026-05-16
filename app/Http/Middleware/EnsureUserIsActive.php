@@ -15,7 +15,7 @@ class EnsureUserIsActive
      */
     public function handle($request, Closure $next)
     {
-        if ($request->user()?->status !== 'active') {
+        if ($request->user()?->status !== true) {
             return response()->json([
                 'status' => false,
                 'status_code' => 403,

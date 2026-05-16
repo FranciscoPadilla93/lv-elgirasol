@@ -28,10 +28,12 @@ class ExpedienteTutorResource extends JsonResource
                 'tutor',
                 function () {
                     return [
-                        'id' => $this->tutor->id,
-                        'nombre_completo' => $this->tutor->nombre_completo,
-                        'telefono' => $this->tutor->telefono,
-                        'correo' => $this->tutor->correo,
+                        'id' => $this->tutor?->id,
+                        'nombre' => $this->tutor?->nombre,
+                        'apellido_paterno' => $this->tutor?->apellido_paterno,
+                        'apellido_materno' => $this->tutor?->apellido_materno,
+                        'telefono' => $this->tutor?->telefono,
+                        'correo' => $this->tutor?->correo,
                     ];
                 }
             ),

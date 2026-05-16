@@ -5,13 +5,17 @@ namespace App\Services\School;
 use App\Models\School\EvaluacionInicial;
 use App\Models\School\Inscripcion;
 use App\Models\School\ReglaInscripcion;
-use App\Models\Catalogs\EstadoInscripcion;
 use App\Models\Catalogs\TipoEvaluacion;
+use App\Services\School\WorkflowInscripcionService;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
 class EvaluacionInicialService
 {
+    public function __construct(
+        private WorkflowInscripcionService $workflowInscripcionService
+    ) {}
+
     private function relations(): array
     {
         return [
@@ -73,10 +77,7 @@ class EvaluacionInicialService
             $evaluacion = EvaluacionInicial::create($data);
 
             // ACTUALIZAR INSCRIPCIÓN
-            $this->updateInscripcionWorkflow(
-                $inscripcion,
-                $evaluacion
-            );
+            $this->workflowInscripcionService->refresh($inscripcion);
 
             return $evaluacion->load(
                 $this->relations()
@@ -124,11 +125,8 @@ class EvaluacionInicialService
             $evaluacionInicial->update($data);
             $evaluacionInicial->refresh();
 
-            // ACTUALIZAR WORKFLOW
-            $this->updateInscripcionWorkflow(
-                $inscripcion,
-                $evaluacionInicial
-            );
+            // ACTUALIZAR WORKFLOW CENTRAL
+            $this->workflowInscripcionService->refresh($inscripcion);
 
             return $evaluacionInicial->load(
                 $this->relations()
@@ -137,7 +135,13 @@ class EvaluacionInicialService
     }
 
     public function delete(EvaluacionInicial $evaluacionInicial): void {
-        $evaluacionInicial->delete();
+        DB::transaction(function () use ($evaluacionInicial) {
+            $evaluacionInicial->update([
+                'status' => false,
+                'updated_by' => auth()->id()
+            ]);
+            $evaluacionInicial->delete();
+        });
     }
 
     public function restore(int $id): ?EvaluacionInicial
@@ -151,6 +155,10 @@ class EvaluacionInicialService
 
             $evaluacion->restore();
 
+            $evaluacion->update([
+                'status' => true,
+                'updated_by' => auth()->id()
+            ]);
             return $evaluacion->load(
                 $this->relations()
             );
@@ -169,10 +177,6 @@ class EvaluacionInicialService
             ->active()
             ->where('nivel_id', $inscripcion->nivel_id)
             ->where('grado_id', $inscripcion->grado_id)
-            ->where(
-                'is_new_admission',
-                $inscripcion->is_new_admission
-            )
             ->first();
 
         if (!$regla) {
@@ -183,33 +187,6 @@ class EvaluacionInicialService
         }
 
         return $regla;
-    }
-
-    private function updateInscripcionWorkflow($inscripcion, EvaluacionInicial $evaluacion): void {
-        $isApproved = (bool) $evaluacion->is_approved;
-
-        // ACTUALIZAR FLAG TEMPORAL
-        $inscripcion->evaluation_approved = $isApproved;
-
-        // ESTADO
-        $estadoCode = $evaluacion->is_approved
-            ? 'payment_pending'
-            : 'evaluation_pending';
-
-        // OBTENER ESTADO
-        $estado = EstadoInscripcion::query()
-            ->where('code', $estadoCode)
-            ->first();
-
-        if (!$estado) {
-            throw new Exception(
-                'Estado de inscripción inválido.'
-            );
-        }
-
-        $inscripcion->estado_inscripcion_id = $estado->id;
-
-        $inscripcion->save();
     }
 
     private function validateNoApprovedEvaluationExists(Inscripcion $inscripcion, TipoEvaluacion $tipoEvaluacion): void {

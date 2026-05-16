@@ -23,13 +23,17 @@ class UserService
 
             $user = User::create([
                 'name' => $data['name'],
+                'apellido_paterno' => $data['apellido_paterno'],
+                'apellido_materno' => $data['apellido_materno'],
                 'email' => $data['email'],
+                'puesto' => $data['puesto'],
+                'cedula_profesional' => $data['cedula_profesional'],
                 'password' => $data['password'],
                 'role_id' => $data['role_id'],
-                'status' => $data['status'],
                 'email_verified_at' => now(),
             ]);
 
+            $user->refresh();
             return $user->load('role');
         });
 
@@ -50,7 +54,11 @@ class UserService
 
         $user->update([
                 'name' => $data['name'],
+                'apellido_paterno' => $data['apellido_paterno'],
+                'apellido_materno' => $data['apellido_materno'],
                 'email' => $data['email'],
+                'puesto' => $data['puesto'],
+                'cedula_profesional' => $data['cedula_profesional'],
                 'role_id' => $data['role_id'],
                 'status' => $data['status'],
             ]);
@@ -61,6 +69,7 @@ class UserService
             ]);
         }
 
+        $user->refresh();
         return $user->load('role');
     }
 
@@ -75,6 +84,10 @@ class UserService
                     'logged_out_at' => now(),
                     'logout_reason' => 'deleted_user',
                 ]);
+
+            $user->update([
+                'status' => false
+            ]);
 
             $user->delete();
         });
@@ -91,6 +104,9 @@ class UserService
 
             $user->restore();
 
+            $user->update([
+                'status' => true
+            ]);
             return $user->load('role');
         });
     }

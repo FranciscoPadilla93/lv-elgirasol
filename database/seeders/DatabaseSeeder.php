@@ -32,6 +32,10 @@ class DatabaseSeeder extends Seeder
             GrupoSanguineoSeeder::class,
             TipoSeguroMedicoSeeder::class,
             TipoEvaluacionSeeder::class,
+            IntranetUserSeeder::class,
+            ConceptoSeeder::class,
+            EstadoSeeder::class,
+            TipoContactoSeeder::class,
         ]);
     }
 }

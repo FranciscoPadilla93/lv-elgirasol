@@ -11,11 +11,15 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('apellido_paterno');
+            $table->string('apellido_materno')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('puesto');
+            $table->string('cedula_profesional')->unique();
             $table->foreignId('role_id')->nullable()->constrained('roles');
-            $table->string('status')->default('active')->index();
+            $table->boolean('status')->default(true)->index();
             $table->rememberToken();
             $table->timestamps();
         });

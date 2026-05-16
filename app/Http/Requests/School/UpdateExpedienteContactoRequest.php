@@ -19,60 +19,42 @@ class UpdateExpedienteContactoRequest extends FormRequest
                 'sometimes',
                 'nullable',
                 'integer',
-                'exists:cat_parentescos,id',
+                Rule::exists('cat_parentescos', 'id')
+                    ->whereNull('deleted_at')
+                    ->where('status', true),
+            ],
+            'tipo_contacto_id' => [
+                'sometimes',
+                'nullable',
+                'integer',
+                Rule::exists('cat_tipo_contacto', 'id')
+                    ->whereNull('deleted_at')
+                    ->where('status', true),
             ],
             // DATOS PERSONALES
-            'nombre' => [
+            'nombre_completo' => [
                 'sometimes',
-                'nullable',
-                'string',
-                'max:150',
-            ],
-            'apellido_paterno' => [
-                'sometimes',
-                'nullable',
-                'string',
-                'max:150',
-            ],
-            'apellido_materno' => [
-                'nullable',
+                'required',
                 'string',
                 'max:150',
             ],
             // CONTACTO
             'telefono' => [
                 'sometimes',
-                'nullable',
-                'string',
-                'max:20',
-            ],
-            'telefono_secundario' => [
-                'nullable',
+                'required',
                 'string',
                 'max:20',
             ],
             'correo' => [
-                'nullable',
+                'sometimes',
+                'required',
                 'email',
                 'max:255',
             ],
-            // CONFIGURACIÓN
-            'is_emergency_contact' => [
+            'uso_obligado' => [
+                'sometimes',
                 'nullable',
                 'boolean',
-            ],
-            'is_authorized_pickup' => [
-                'nullable',
-                'boolean',
-            ],
-            'status' => [
-                'nullable',
-                'boolean',
-            ],
-            // OBSERVACIONES
-            'observaciones' => [
-                'nullable',
-                'string',
             ],
         ];
     }
@@ -80,8 +62,6 @@ class UpdateExpedienteContactoRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $booleanFields = [
-            'is_emergency_contact',
-            'is_authorized_pickup',
             'status',
         ];
 

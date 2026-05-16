@@ -31,6 +31,7 @@ class StoreExpedienteDocumentoRequest extends FormRequest
                 'required',
                 'file',
                 'max:10240',
+                'mimes:pdf',
             ],
             // VALIDACIÓN
             'validation_notes' => [

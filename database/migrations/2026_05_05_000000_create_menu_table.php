@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('module_id')
+                ->nullable()
                 ->constrained('modules')
                 ->cascadeOnUpdate()
                 ->restrictOnDelete();

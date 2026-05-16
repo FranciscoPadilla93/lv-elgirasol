@@ -15,6 +15,19 @@ class ExpedienteDocumentoService
 
     public function create(array $data): ExpedienteDocumento {
         return DB::transaction(function () use ($data) {
+            // VALIDAR DOCUMENTO DUPLICADO ACTIVO
+            $exists = ExpedienteDocumento::query()
+                ->where('expediente_id', $data['expediente_id'])
+                ->where('tipo_documento_id', $data['tipo_documento_id'])
+                ->whereNull('deleted_at')
+                ->exists();
+
+            if ($exists) {
+                throw new \Exception(
+                    'Este expediente ya cuenta con un documento de este tipo.'
+                );
+            }
+
             $archivo = $data['archivo'];
 
             // SUBIR ARCHIVO
@@ -59,7 +72,10 @@ class ExpedienteDocumentoService
                         ->deleteExistingFile($documento->file_path, 'local');
                 }
             }
-
+            $documento->update([
+                'updated_by' => auth()->id(),
+                'status' => false,
+            ]);
             $documento->delete();
         });
     }

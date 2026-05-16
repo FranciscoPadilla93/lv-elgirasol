@@ -8,13 +8,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Catalogs\Genero;
 use App\Models\Catalogs\EstadoExpediente;
+use App\Models\Catalogs\CatTipoSeguroMedico;
+use App\Models\Catalogs\CatGrupoSanguineo;
+use App\Models\Catalogs\Estado;
 use App\Models\User;
 use App\Models\School\Inscripcion;
 use App\Models\School\ExpedienteTutor;
 use App\Models\School\ExpedienteDocumento;
 use App\Models\School\ExpedienteContacto;
-use App\Models\Catalogs\CatTipoSeguroMedico;
-use App\Models\Catalogs\CatGrupoSanguineo;
+
 
 
 class Expediente extends Model
@@ -30,6 +32,7 @@ class Expediente extends Model
         'apellido_materno',
         'fecha_nacimiento',
         'curp',
+        'estado_id',
         'genero_id',
         'estado_expediente_id',
         'fecha_ingreso',
@@ -69,7 +72,9 @@ class Expediente extends Model
             'fecha_ingreso' => 'date',
             'fecha_baja' => 'date',
             'alergias' => 'boolean',
+            'alergias_descripcion' => 'array',
             'enfermedad_cronica' => 'boolean',
+            'enfermedad_cronica_descripcion' => 'array',
             'seguro_medico' => 'boolean',
             'bautizado' => 'boolean',
             'primera_comunion' => 'boolean',
@@ -126,6 +131,11 @@ class Expediente extends Model
     public function grupoSanguineo(): BelongsTo
     {
         return $this->belongsTo(CatGrupoSanguineo::class, 'grupo_sanguineo_id');
+    }
+
+    public function estado(): BelongsTo
+    {
+        return $this->belongsTo(Estado::class);
     }
 
     public function getNombreCompletoAttribute(): string

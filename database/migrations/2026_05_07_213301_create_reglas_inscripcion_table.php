@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('nivel_id')->constrained('cat_niveles');
             $table->foreignId('grado_id')->constrained('cat_grados');
             // CONFIGURACIÓN
-            $table->boolean('is_new_admission')->default(true);
+            // $table->boolean('is_new_admission')->default(true);
             // VALIDACIONES
             $table->boolean('requires_evaluation')->default(false);
             $table->boolean('requires_socioeconomic_study')->default(false);
@@ -37,14 +37,12 @@ return new class extends Migration
             // ÍNDICES
             $table->index('nivel_id');
             $table->index('grado_id');
-            $table->index('is_new_admission');
             $table->index('requires_evaluation');
             $table->index('status');
             // EVITAR DUPLICADOS
             $table->unique([
                 'nivel_id',
                 'grado_id',
-                'is_new_admission',
             ], 'uq_regla_nivel_grado_ingreso');
         });
     }

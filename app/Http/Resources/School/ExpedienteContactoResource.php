@@ -11,27 +11,21 @@ class ExpedienteContactoResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'nombre' => $this->nombre,
-            'apellido_paterno' => $this->apellido_paterno,
-            'apellido_materno' => $this->apellido_materno,
-            'nombre_completo' => trim(
-                "{$this->nombre} {$this->apellido_paterno} {$this->apellido_materno}"
-            ),
+            'nombre_completo' => $this->nombre_completo,
             'parentesco' => [
                 'id' => $this->parentesco?->id,
                 'code' => $this->parentesco?->code,
                 'name' => $this->parentesco?->name,
             ],
-            // CONTACTO
+            'tipo_contacto' => [
+                'id' => $this->tipoContacto?->id,
+                'code' => $this->tipoContacto?->code,
+                'name' => $this->tipoContacto?->name,
+            ],
             'telefono' => $this->telefono,
-            'telefono_secundario' => $this->telefono_secundario,
             'correo' => $this->correo,
-            // CONFIGURACIÓN
-            'is_emergency_contact' => $this->is_emergency_contact,
-            'is_authorized_pickup' => $this->is_authorized_pickup,
+            'uso_obligado' => $this->uso_obligado,
             'status' => $this->status,
-            // OBSERVACIONES
-            'observaciones' => $this->observaciones,
             // FECHAS
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

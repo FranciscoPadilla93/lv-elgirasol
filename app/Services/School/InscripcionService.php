@@ -5,11 +5,16 @@ namespace App\Services\School;
 use App\Models\School\Inscripcion;
 use App\Models\School\ReglaInscripcion;
 use App\Models\Catalogs\EstadoInscripcion;
+use App\Services\School\WorkflowInscripcionService;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
 class InscripcionService
 {
+    public function __construct(
+        private WorkflowInscripcionService $workflowInscripcionService
+    ) {}
+
     private function relations(): array
     {
         return [
@@ -37,15 +42,19 @@ class InscripcionService
                 );
             }
 
+            // DETERMINAR SI ES NUEVA ADMISIÓN AUTOMÁTICAMENTE
+            $isNewAdmission = $this->isNewAdmission($data);
+
             // BUSCAR REGLA
             $regla = ReglaInscripcion::query()
                 ->active()
                 ->where('nivel_id', $data['nivel_id'])
                 ->where('grado_id', $data['grado_id'])
-                ->where(
-                    'is_new_admission',
-                    $data['is_new_admission']
-                )->first();
+                // ->where(
+                //     'is_new_admission',
+                //     $data['is_new_admission']
+                // )
+                ->first();
 
             if (!$regla) {
                 throw new Exception(
@@ -53,16 +62,20 @@ class InscripcionService
                 );
             }
 
-            // $data['requires_evaluation'] = $regla->requires_evaluation;
-            // REQUIERE EVALUACION NUEVA ADMISION
-            if (!empty($data['is_new_admission'])) {
+            // REQUIERE EVALUACIÓN
+            if ($isNewAdmission) {
                 $data['requires_evaluation'] = true;
+                $data['requires_socioeconomic_study'] = true;
             } else {
+                $data['requires_socioeconomic_study'] = $regla->requires_socioeconomic_study;
                 $data['requires_evaluation'] = $regla->requires_evaluation;
             }
 
-            $data['requires_socioeconomic_study'] = $regla->requires_socioeconomic_study;
+
             $data['requires_treasury_validation'] = $regla->requires_treasury_validation;
+
+            $data['is_new_admission'] = $isNewAdmission;
+
             // DETERMINAR ESTADO INICIAL
             $estadoCode = $this->resolveInitialStatus($data);
 
@@ -77,13 +90,13 @@ class InscripcionService
             }
 
             $data['estado_inscripcion_id'] = $estado->id;
-            // FECHA
             $data['inscription_date'] = now();
-            // COMPLETADO
             $data['is_completed'] = false;
-            // AUDITORÍA
             $data['created_by'] = auth()->id();
             $inscripcion = Inscripcion::create($data);
+
+            // REFRESCAR WORKFLOW CENTRAL
+            $inscripcion = $this->workflowInscripcionService->refresh($inscripcion);
 
             return $inscripcion->load($this->relations());
         });
@@ -97,16 +110,22 @@ class InscripcionService
             $data['updated_by'] = auth()->id();
             $inscripcion->update($data);
             $inscripcion->refresh();
+            $inscripcion = $this->workflowInscripcionService->refresh($inscripcion);
 
-            return $inscripcion->load(
-                $this->relations()
-            );
+            return $inscripcion->load($this->relations());
         });
     }
 
     public function delete(Inscripcion $inscripcion): void
     {
-        $inscripcion->delete();
+        DB::transaction(function () use ($inscripcion)
+        {
+            $inscripcion->delete();
+
+            $inscripcion->update([
+                'updated_by' => auth()->id()
+            ]);
+        });
     }
 
     public function restore(int $id): ?Inscripcion
@@ -119,6 +138,10 @@ class InscripcionService
             }
 
             $inscripcion->restore();
+
+            $inscripcion->update([
+                'updated_by' => auth()->id()
+            ]);
 
             return $inscripcion->load(
                 $this->relations()
@@ -137,5 +160,13 @@ class InscripcionService
         }
 
         return 'approved';
+    }
+
+    private function isNewAdmission(array $data): bool
+    {
+        return ! Inscripcion::query()
+            ->where('expediente_id', $data['expediente_id'])
+            ->whereNull('deleted_at')
+            ->exists();
     }
 }

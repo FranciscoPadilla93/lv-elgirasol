@@ -32,6 +32,13 @@ class EstadoInscripcionSeeder extends Seeder
                 'created_at' =>  now()
             ],
             [
+                'code' => 'socioeconomic_pending',
+                'name' => 'Estudio socioeconómico pendiente',
+                'is_final' => false,
+                'status' => true,
+                'created_at' =>  now()
+            ],
+            [
                 'code' => 'payment_pending',
                 'name' => 'Pago pendiente',
                 'is_final' => false,

@@ -56,11 +56,18 @@ class Menu extends Model
 
     public function children(): HasMany
     {
-        return $this->hasMany(self::class, 'parent_id')->orderBy('order');
+        return $this->hasMany(self::class, 'parent_id')
+            ->where('status', 'active')
+            ->orderBy('order');
     }
 
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
+    }
+
+    public function scopeParents($query)
+    {
+        return $query->whereNull('parent_id');
     }
 }

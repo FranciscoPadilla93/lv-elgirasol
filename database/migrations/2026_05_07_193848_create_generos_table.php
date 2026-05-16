@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('code', 50) -> unique();
             $table->string('name', 100);
-            $table->string('status', 20) -> default('active');
+            $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();
 

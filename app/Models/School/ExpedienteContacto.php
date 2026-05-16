@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Catalogs\Parentesco;
 use App\Models\User;
+use App\Models\Catalogs\TipoContacto;
 
 class ExpedienteContacto extends Model
 {
@@ -17,16 +18,12 @@ class ExpedienteContacto extends Model
     protected $fillable = [
         'expediente_id',
         'parentesco_id',
-        'nombre',
-        'apellido_paterno',
-        'apellido_materno',
+        'tipo_contacto_id',
+        'nombre_completo',
         'telefono',
-        'telefono_secundario',
         'correo',
-        'is_emergency_contact',
-        'is_authorized_pickup',
+        'uso_obligado',
         'status',
-        'observaciones',
         'created_by',
         'updated_by',
     ];
@@ -34,8 +31,7 @@ class ExpedienteContacto extends Model
     protected function casts(): array
     {
         return [
-            'is_emergency_contact' => 'boolean',
-            'is_authorized_pickup' => 'boolean',
+            'uso_obligado' => 'boolean',
             'status' => 'boolean',
         ];
     }
@@ -61,12 +57,9 @@ class ExpedienteContacto extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    // ACCESSORS
-    public function getNombreCompletoAttribute(): string
+    public function tipoContacto(): BelongsTo
     {
-        return trim(
-            "{$this->nombre} {$this->apellido_paterno} {$this->apellido_materno}"
-        );
+        return $this->belongsTo(TipoContacto::class, 'tipo_contacto_id');
     }
 
     // SCOPES

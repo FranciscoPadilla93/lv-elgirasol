@@ -29,7 +29,6 @@ return [
     */
 
     'disks' => [
-
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
@@ -37,7 +36,18 @@ return [
             'throw' => false,
             'report' => false,
         ],
-
+        'ftp' => [
+            'driver' => 'ftp',
+            'host' => env('FTP_HOST'),
+            'username' => env('FTP_USERNAME'),
+            'password' => env('FTP_PASSWORD'),
+            'port' => (int) env('FTP_PORT', 21),
+            'root' => env('FTP_ROOT', ''),
+            'passive' => env('FTP_PASSIVE', true),
+            'ssl' => env('FTP_SSL', false),
+            'timeout' => 30,
+            'throw' => false,
+        ],
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
@@ -46,7 +56,6 @@ return [
             'throw' => false,
             'report' => false,
         ],
-
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
