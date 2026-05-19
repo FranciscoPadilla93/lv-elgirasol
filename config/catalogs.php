@@ -13,14 +13,19 @@ use App\Models\Catalogs\Nivel;
 use App\Models\Catalogs\Grado;
 use App\Models\Catalogs\CicloEscolar;
 use App\Models\Catalogs\TipoEvaluacion;
+use App\Models\School\Concepto;
 
 return [
+    'conceptos' => [
+        'model' => Concepto::class,
+        'label' => 'Conceptos Ciclos Escolares',
+        'order_by' => 'name',
+    ],
     'estados' => [
         'model' => Estado::class,
         'label' => 'Estados',
         'order_by' => 'name',
     ],
-
     'generos' => [
         'model' => Genero::class,
         'label' => 'Géneros',

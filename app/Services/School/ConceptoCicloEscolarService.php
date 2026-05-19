@@ -94,6 +94,10 @@ class ConceptoCicloEscolarService
             $data['has_late_fee'] = $data['has_late_fee'] ?? false;
             $data['created_by'] = auth()->id();
 
+            if (array_key_exists('has_late_fee', $data) && ! $data['has_late_fee']) {
+                $data['late_fee_percentage'] = 0;
+            }
+
             $conceptoCicloEscolar = ConceptoCicloEscolar::create($data);
 
             return $conceptoCicloEscolar->load($this->relations);
@@ -103,6 +107,11 @@ class ConceptoCicloEscolarService
     public function update(ConceptoCicloEscolar $conceptoCicloEscolar, array $data): ConceptoCicloEscolar {
         return DB::transaction(function () use ($conceptoCicloEscolar, $data) {
             $data['updated_by'] = auth()->id();
+
+            if (array_key_exists('has_late_fee', $data) && ! $data['has_late_fee']) {
+                $data['late_fee_percentage'] = 0;
+            }
+
             $conceptoCicloEscolar->update($data);
 
             return $conceptoCicloEscolar

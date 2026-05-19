@@ -16,6 +16,7 @@ return new class extends Migration
             $table->date('start_date')->nullable();
             $table->date('due_date')->nullable();
             $table->boolean('has_late_fee')->default(false);
+            $table->decimal('late_fee_percentage', 5, 2)->default(0);
             $table->boolean('status')->default(true);
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('updated_by')

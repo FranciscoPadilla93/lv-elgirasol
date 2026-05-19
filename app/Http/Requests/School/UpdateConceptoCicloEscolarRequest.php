@@ -67,6 +67,16 @@ class UpdateConceptoCicloEscolarRequest extends FormRequest
                 'nullable',
                 'boolean',
             ],
+            'late_fee_percentage' => [
+                'sometimes',
+                'numeric',
+                'min:0',
+                'max:100',
+                Rule::when(
+                    ! $this->boolean('has_late_fee'),
+                    ['in:0']
+                ),
+            ],
             'status' => [
                 'nullable',
                 'boolean',

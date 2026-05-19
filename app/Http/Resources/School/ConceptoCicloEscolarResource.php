@@ -32,6 +32,7 @@ class ConceptoCicloEscolarResource extends JsonResource
             'start_date' => $this->start_date?->format('Y-m-d'),
             'due_date' => $this->due_date?->format('Y-m-d'),
             'has_late_fee' => (bool) $this->has_late_fee,
+            'late_fee_percentage' => $this->late_fee_percentage,
             'status' => (bool) $this->status,
             'created_by' => $this->created_by,
             'updated_by' => $this->updated_by,

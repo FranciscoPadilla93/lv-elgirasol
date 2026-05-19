@@ -50,6 +50,13 @@ class StoreConceptoCicloEscolarRequest extends FormRequest
                 'nullable',
                 'boolean',
             ],
+            'late_fee_percentage' => [
+                'nullable',
+                'required_if:has_late_fee,true',
+                'numeric',
+                'min:0',
+                'max:100',
+            ],
             'status' => [
                 'nullable',
                 'boolean',

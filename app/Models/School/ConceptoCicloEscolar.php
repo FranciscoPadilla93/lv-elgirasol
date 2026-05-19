@@ -22,6 +22,7 @@ class ConceptoCicloEscolar extends Model
         'start_date',
         'due_date',
         'has_late_fee',
+        'late_fee_percentage',
         'status',
         'created_by',
         'updated_by',
@@ -34,6 +35,7 @@ class ConceptoCicloEscolar extends Model
             'start_date' => 'date:Y-m-d',
             'due_date' => 'date:Y-m-d',
             'has_late_fee' => 'boolean',
+            'late_fee_percentage' => 'decimal:2',
             'status' => 'boolean',
         ];
     }
